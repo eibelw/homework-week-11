@@ -1,0 +1,30 @@
+version: '3'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  todoapidocker:
+    build: .
+    networks:
+      - app-tier
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pgsqldb
+    volumes:
+      - ./:/usr/src/app
+
+  pgsqldb:
+    image: postgres:12
+    ports:
+      - "5439-5439"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASS
+      - POSTGRES_NAME
+    networks:
+      - app-tier

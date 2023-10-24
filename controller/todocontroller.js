@@ -3,7 +3,7 @@ const { todo } = require("../models");
 class TodoController {
   static async getAll(req, res, next) {
     try {
-      const data = await todo.findAll({ where: { status: 'Sudah' } });
+      const data = await todo.findAll({ where: { status: "Sudah" } });
 
       if (!data) {
         throw { name: "Data not found" };
@@ -44,7 +44,25 @@ class TodoController {
     const { title, status } = req.body;
     try {
       const data = await todo.update({ title, status }, { where: { id } });
-      res.status(200).json({ message: "New data updated" });
+      if (!data) {
+        throw { name: "Data wrong" };
+      } else {
+        res.status(200).json({ message: "New data updated" });
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async soft_delete(req, res, next) {
+    const { id } = req.params;
+    try {
+      const data = await todo.update({ status: "Belum" }, { where: { id } });
+      if (!data) {
+        throw { name: "Data wrong" };
+      } else {
+        res.status(200).json({ message: "Data changed succesfully" });
+      }
     } catch (err) {
       next(err);
     }
@@ -53,8 +71,12 @@ class TodoController {
   static async delete(req, res, next) {
     const { id } = req.params;
     try {
-      const data = await todo.update({status: 'Belum'}, { where: { id } });
-      res.status(200).json({ message: "Data changed succesfully" });
+      const data = await todo.destroy({ where: { id } });
+      if (!data) {
+        throw { name: "Data wrong" };
+      } else {
+        res.status(200).json({ message: "Data deleted succesfully" });
+      }
     } catch (err) {
       next(err);
     }

@@ -10,6 +10,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(router);
 app.use(errorHandler);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Connected at ${port}`);
 });
+
+module.exports = { app, server };
